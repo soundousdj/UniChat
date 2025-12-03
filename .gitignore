@@ -1,0 +1,31 @@
+# General
+node_modules/
+.idea/
+.vscode/
+.DS_Store
+*.log
+
+# React Native
+.metro-health-check
+package-lock.json
+yarn.lock
+
+# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+android/.idea/
+
+# iOS
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/
+ios/Podfile.lock
+
+# Expo (إذا كنت تستخدم Expo أضف هذا)
+.expo/
+dist/
+web-build/
+
+# Security (مهم جداً لحماية مفاتيح API)
+.env
