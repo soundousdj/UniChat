@@ -92,12 +92,17 @@ export default function LoginScreen() {
             >
               <Text style={styles.forgotText}>Forgot password ?</Text>
             </TouchableOpacity>
-
             <PurpleButton
-              label="Login"
-              onPress={() => alert("Login pressed")}
-            />
-
+  label="Login"
+  onPress={() => {
+    // هنا يمكنك إضافة منطق التحقق من البيانات مستقبلاً
+    if (regNo && password) {
+      router.replace("/(tabs)"); 
+    } else {
+      alert("Please fill in all fields");
+    }
+  }}
+/>
             <TouchableOpacity
               onPress={() => router.push("/register")}
               style={styles.bottomTextWrap}
