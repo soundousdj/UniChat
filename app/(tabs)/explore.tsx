@@ -1,5 +1,7 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, ActivityIndicator, View } from 'react-native';
+import { useState, useEffect } from 'react'; // أضفنا هذه
+import AsyncStorage from '@react-native-async-storage/async-storage'; // أضفنا هذه
 
 import { Collapsible } from '@/components/ui/collapsible';
 import { ExternalLink } from '@/components/external-link';
@@ -10,6 +12,45 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
 export default function TabTwoScreen() {
+  // --- بداية منطق الربط مع الباك اند ---
+  const [role, setRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const savedRole = await AsyncStorage.getItem('userRole');
+        setRole(savedRole);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAccess();
+  }, []);
+
+  // 1. شاشة تحميل بسيطة أثناء التأكد من الرتبة
+  if (isLoading) {
+    return (
+      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#6C63FF" />
+      </ThemedView>
+    );
+  }
+
+  // 2. إذا كان المستخدم "طالب"، لا تعرض له محتوى الصفحة الأصلي
+  if (role !== 'teacher') {
+    return (
+      <ThemedView style={styles.centerContainer}>
+        <IconSymbol size={100} color="#808080" name="lock.fill" />
+        <ThemedText type="title">عذراً</ThemedText>
+        <ThemedText>هذه الصفحة متاحة فقط لحسابات الأساتذة.</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  // --- إذا كان "أستاذ"، يتم عرض الكود الأصلي الخاص بك كما هو دون أي تغيير ---
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -109,4 +150,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  // أضفنا هذا الستايل لرسالة المنع
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    gap: 10
+  }
 });

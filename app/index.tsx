@@ -1,17 +1,22 @@
-// app/index.tsx
-import { useState, useEffect } from "react";
-import SplashScreen from "../components/SplashScreen";
-import { Redirect } from "expo-router";
+import { useState, useEffect } from 'react'; // أضفنا useState هنا
+import { Redirect } from 'expo-router'; // حذفنا useRouter لأننا سنستخدم Redirect فقط
+import AsyncStorage from '@react-native-async-storage/async-storage'; // أضفنا هذا السطر
 
 export default function Index() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 3000);
-    return () => clearTimeout(timer);
+    const checkStatus = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) setIsLoggedIn(true);
+      setChecking(false);
+    };
+    checkStatus();
   }, []);
 
-  if (showSplash) return <SplashScreen onFinish={undefined} />;
+  if (checking) return null; // أو شاشة تحميل بسيطة
 
-  return <Redirect href="./welcome" />;
+  // إذا كان مسجل دخول، اذهب للتبويبات، وإذا لا، اذهب لصفحة الترحيب
+  return isLoggedIn ? <Redirect href="/(tabs)" /> : <Redirect href="/welcome" />;
 }

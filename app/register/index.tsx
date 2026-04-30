@@ -1,4 +1,3 @@
-// app/register/index.tsx
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -11,8 +10,10 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  Alert, // أضفنا Alert لإظهار رسائل الخطأ والنجاح
+  ActivityIndicator, // أضفنا مؤشر تحميل
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // 1. استدعاء المكتبة
+import { Ionicons } from "@expo/vector-icons";
 import PurpleButton from "../../components/PurpleButton";
 import BottomWave from "../../components/BottomWave";
 
@@ -26,8 +27,47 @@ export default function RegisterScreen() {
   const [confirm, setConfirm] = useState("");
   const [secure1, setSecure1] = useState(true);
   const [secure2, setSecure2] = useState(true);
+  const [loading, setLoading] = useState(false); // حالة التحميل
 
-  // لون الأيقونة
+  // رابط الباك اند (استخدم 10.0.2.2 للمحاكي أو IP جهازك للهاتف الحقيقي)
+  const API_URL = "http://192.168.1.4:5000/api/auth/register";
+
+ // داخل دالة handleSignUp
+const handleSignUp = async () => {
+    if (!regNo || !email || !pass || !confirm) {
+      Alert.alert("Error", "Please fill all fields");
+      return;
+    }
+    setLoading(true);
+    try {
+      // تحديد الرتبة برمجياً دون تغيير الواجهة
+      const userRole = email.includes("@uni.com") ? "teacher" : "student";
+
+      const response = await fetch("http://192.168.1.4:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: regNo,
+          email: email.toLowerCase().trim(),
+          password: pass,
+          role: userRole,
+        }),
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", `${userRole} account created!`);
+        router.push("/login");
+      } else {
+        const data = await response.json();
+        Alert.alert("Error", data.error || "Failed");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Connection failed. Check Server/Firewall");
+    } finally {
+      setLoading(false);
+    }
+};
+
   const ICON_COLOR = "#000000ff"; 
   const ICON_SIZE = 22;
 
@@ -115,9 +155,11 @@ export default function RegisterScreen() {
               </TouchableOpacity>
             </View>
 
+            {/* تعديل الزر لاستدعاء الدالة الجديدة */}
             <PurpleButton
-              label="Sign up"
-              onPress={() => alert("Sign up pressed")}
+              label={loading ? "Creating account..." : "Sign up"}
+              onPress={handleSignUp}
+              disabled={loading}
             />
 
             <TouchableOpacity
@@ -138,6 +180,7 @@ export default function RegisterScreen() {
   );
 }
 
+// ... الستايلات كما هي تماماً دون تغيير ...
 const PRIMARY = "#450693";
 const LIGHT = "#C6B6DA";
 
@@ -184,7 +227,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  icon: { marginRight: 12 }, // تم حذف fontSize لأن الأيقونة لها prop size
+  icon: { marginRight: 12 }, 
   input: { flex: 1, fontSize: 16, color: "#000", padding: 0 },
   eyeBtn: { paddingHorizontal: 6 },
   bottomTextWrap: { marginTop: 10, alignItems: "center" },

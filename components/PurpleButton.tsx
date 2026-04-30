@@ -1,4 +1,3 @@
-// components/PurpleButton.tsx
 import React from "react";
 import {
   Pressable,
@@ -10,19 +9,23 @@ import {
 
 const { width } = Dimensions.get("window");
 
+// 1. تحديث الـ Interface ليقبل خاصية disabled
 interface PurpleButtonProps {
   label: string;
   onPress: () => void;
+  disabled?: boolean; // أضفنا علامة الاستبعاد ليكون اختيارياً
 }
 
-export default function PurpleButton({ label, onPress }: PurpleButtonProps) {
+export default function PurpleButton({ label, onPress, disabled }: PurpleButtonProps) {
   return (
     <View style={styles.container}>
       <Pressable
         onPress={onPress}
+        disabled={disabled} // 2. ربط الخاصية بـ Pressable
         style={({ pressed }) => [
           styles.button,
-          pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 },
+          // 3. إضافة تأثير الشفافية عند التعطيل (Disabled) أو الضغط
+          (pressed || disabled) && { transform: [{ scale: 0.98 }], opacity: 0.7 },
         ]}
       >
         <Text style={styles.text}>{label}</Text>
@@ -37,16 +40,15 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     alignItems: "center",
-    marginVertical: 20, // مسافة علوية وسفلية لفصل الزر عن العناصر الأخرى
+    marginVertical: 20,
   },
   button: {
-    width: width * 0.35, // عرض الزر 85% من الشاشة
+    width: width * 0.35, 
     paddingVertical: 18,
     backgroundColor: PRIMARY,
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
-    // خصائص الظل
     shadowColor: PRIMARY,
     shadowOffset: {
       width: 0,
