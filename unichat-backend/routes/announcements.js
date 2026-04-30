@@ -1,25 +1,27 @@
-const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
 const Announcement = require('../models/Announcement');
 
-// حفظ إعلان جديد
+// جلب كل الإعلانات
+router.get('/all', async (req, res) => {
+    try {
+        const announcements = await Announcement.find().sort({ createdAt: -1 });
+        res.json(announcements);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// إضافة إعلان جديد
 router.post('/add', async (req, res) => {
     try {
         const newAnn = new Announcement(req.body);
-        await newAnn.save();
-        res.status(201).json(newAnn);
+        const saved = await newAnn.save();
+        res.status(201).json(saved);
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({ error: err.message });
     }
 });
 
-// جلب جميع الإعلانات
-router.get('/all', async (req, res) => {
-    try {
-        const ann = await Announcement.find().sort({ createdAt: -1 });
-        res.json(ann);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
+// السطر الأهم: يجب أن يكون هكذا
 module.exports = router;

@@ -71,7 +71,14 @@ router.get('/profile', verifyToken, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
+router.get('/all-users', async (req, res) => {
+    try {
+        const users = await User.find().select('username role email');
+        res.json(users); // السيرفر سيرسل JSON ولن يظهر خطأ < بعد الآن
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // 2. جلب جميع المستخدمين (لظهورهم في Contacts و Home)
 const mongoose = require('mongoose');
 
