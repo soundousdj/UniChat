@@ -56,7 +56,7 @@ export default function LoginScreen() {
       await AsyncStorage.setItem('userRole', data.role);
       await AsyncStorage.setItem('userName', data.username); // حفظ الاسم الحقيقي
       await AsyncStorage.setItem('userEmail', data.email);    // حفظ الإيميل الحقيقي
-
+      await AsyncStorage.setItem('userId', data.userId || data._id);
       router.replace("/(tabs)"); 
     } else {
       Alert.alert("Login Failed", data.message || "Invalid credentials");

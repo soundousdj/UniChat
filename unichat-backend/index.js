@@ -10,11 +10,14 @@ app.use(cors());
 // استيراد الروابط
 const authRoutes = require('./routes/auth');
 const announcementRoutes = require('./routes/announcements');
-
+const messageRoutes = require('./routes/messages'); // الملف الجديد
+const groupRoutes = require('./routes/groups');
+ // أضف هذا السطر قبل الـ routes 
 // تفعيل الروابط - تأكد من هذه المسارات
 app.use('/api/auth', authRoutes);
 app.use('/api/announcements', announcementRoutes);
-
+app.use('/api/messages', messageRoutes);
+app.use('/api/groups', groupRoutes);
 const mongoURI = "mongodb+srv://sositasita0_db_user:unichat@cluster0.gh0muwk.mongodb.net/unichat?retryWrites=true&w=majority";
 
 mongoose.connect(mongoURI)
