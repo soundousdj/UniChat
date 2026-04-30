@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   avatarWrapper: { alignItems: 'center', marginBottom: 40 },
   avatarCircle: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, borderColor: PURPLE, padding: 3, position: 'relative' },
   avatarImage: { width: '100%', height: '100%', borderRadius: 65 },
-  cameraBtn: { position: 'absolute', bottom: 5, right: 5, backgroundColor: PURPLE, width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', borderWeight: 3, borderColor: '#fff' },
+  cameraBtn: { position: 'absolute', bottom: 5, right: 5, backgroundColor: PURPLE, width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', borderWidth: 3, borderColor: '#fff' },
   fieldGroup: { marginBottom: 20 },
   label: { fontSize: 14, color: '#666', marginBottom: 8, fontWeight: '500' },
   input: { backgroundColor: '#F8F9FA', padding: 16, borderRadius: 12, fontSize: 16, color: '#333', borderWidth: 1, borderColor: '#EEE' },
