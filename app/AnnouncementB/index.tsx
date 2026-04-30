@@ -26,18 +26,16 @@ export default function AnnouncementB({ onBack }: AnnouncementProps) {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
+        // تأكد من استخدام الـ IP الصحيح لجهازك
         const response = await fetch('http://192.168.1.4:5000/api/announcements/all');
         const data = await response.json();
         
         if (response.ok) {
           setAnnouncements(Array.isArray(data) ? data : []);
-        } else {
-          console.log("Error fetching:", data);
         }
       } catch (err) {
         console.error("Network error:", err);
       } finally {
-        // أهم تعديل: إيقاف التحميل سواء نجح الطلب أو فشل
         setLoading(false);
       }
     };
@@ -95,12 +93,12 @@ export default function AnnouncementB({ onBack }: AnnouncementProps) {
           ) : announcements.length === 0 ? (
             <View style={styles.noDataBox}>
                <Ionicons name="document-text-outline" size={50} color="#CCC" />
-               <Text style={styles.noDataText}>No announcements found in database.</Text>
+               <Text style={styles.noDataText}>No announcements found.</Text>
             </View>
           ) : (
             announcements.map((item) => (
               <View key={item._id} style={styles.announcementCard}>
-                {/* الجزء العلوي: معلومات الناشر */}
+                {/* الجزء العلوي: معلومات الأستاذ */}
                 <View style={styles.cardHeader}>
                   <View style={styles.userInfo}>
                     <Image 
@@ -123,23 +121,23 @@ export default function AnnouncementB({ onBack }: AnnouncementProps) {
                   </View>
                 </View>
 
-                {/* أيقونة الإرسال التلقائي */}
+                {/* أيقونة الإشعار */}
                 <View style={styles.autoSentContainer}>
                    <Ionicons name="notifications" size={14} color={PURPLE} />
-                   <Text style={styles.autoSentText}>Sent automatically to {item.group}</Text>
+                   <Text style={styles.autoSentText}>Sent to {item.group || 'Everyone'}</Text>
                 </View>
 
-                {/* نص الإعلان */}
+                {/* نص الرسالة الحقيقي */}
                 <Text style={styles.contentBox}>{item.message}</Text>
 
                 <View style={styles.divider} />
 
-                {/* الجزء السفلي: الإحصائيات والتفاعل */}
+                {/* Footer */}
                 <View style={styles.cardFooter}>
-                  <Text style={styles.footerStats}>31 students seen</Text>
+                  <Text style={styles.footerStats}>Verified Announcement</Text>
                   <View style={styles.likesContainer}>
                     <MaterialCommunityIcons name="thumb-up-outline" size={18} color={PURPLE} />
-                    <Text style={styles.likesText}>8</Text>
+                    <Text style={styles.likesText}>12</Text>
                   </View>
                 </View>
               </View>
