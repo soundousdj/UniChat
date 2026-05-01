@@ -30,7 +30,7 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false); // حالة التحميل
 
   // رابط الباك اند (استخدم 10.0.2.2 للمحاكي أو IP جهازك للهاتف الحقيقي)
-  const API_URL = "http://192.168.1.4:5000/api/auth/register";
+  const API_URL = "http://10.189.157.75:8081/api/auth/register";
 
  // داخل دالة handleSignUp
 const handleSignUp = async () => {
@@ -43,7 +43,7 @@ const handleSignUp = async () => {
       // تحديد الرتبة برمجياً دون تغيير الواجهة
       const userRole = email.includes("@uni.com") ? "teacher" : "student";
 
-      const response = await fetch("http://192.168.1.4:5000/api/auth/register", {
+      const response = await fetch("http://10.189.157.75:8081/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

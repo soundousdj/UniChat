@@ -27,7 +27,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false); // حالة التحميل
 
   // رابط الباك اند الخاص بك (تأكد من الـ IP)
-  const API_URL = "http://192.168.1.4:5000/api/auth/login";
+  const API_URL = "http://10.189.157.156:5000/api/auth/login";
 
   const handleLogin = async () => {
   if (!regNo || !password) {
@@ -56,7 +56,7 @@ export default function LoginScreen() {
       await AsyncStorage.setItem('userRole', data.role);
       await AsyncStorage.setItem('userName', data.username); // حفظ الاسم الحقيقي
       await AsyncStorage.setItem('userEmail', data.email);    // حفظ الإيميل الحقيقي
-      await AsyncStorage.setItem('userId', data.userId || data._id);
+      await AsyncStorage.setItem('userId', data._id);
       router.replace("/(tabs)"); 
     } else {
       Alert.alert("Login Failed", data.message || "Invalid credentials");

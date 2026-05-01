@@ -65,7 +65,7 @@ export default function NewAnnouncement({ onBack }: Props) {
     setSending(true);
     try {
       // تأكد أن الـ IP صحيح ويطابق جهازك
-      const response = await fetch('http://192.168.1.4:5000/api/announcements/add', {
+      const response = await fetch('http://10.189.157.156:5000/api/announcements/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -27,7 +27,7 @@ export default function AnnouncementB({ onBack }: AnnouncementProps) {
     const fetchAnnouncements = async () => {
       try {
         // تأكد من استخدام الـ IP الصحيح لجهازك
-        const response = await fetch('http://192.168.1.4:5000/api/announcements/all');
+        const response = await fetch('http://10.189.157.156:5000/api/announcements/all');
         const data = await response.json();
         
         if (response.ok) {

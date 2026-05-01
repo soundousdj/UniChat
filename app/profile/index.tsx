@@ -18,7 +18,7 @@ export default function ProfileSettings({ onBack }: { onBack: () => void }) {
     const loadUserData = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
-        const res = await fetch('http://192.168.1.4:5000/api/auth/profile', {
+        const res = await fetch('http://10.189.157.156:5000/api/auth/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();

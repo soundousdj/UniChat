@@ -11,6 +11,7 @@ import AnnouncementB from '../AnnouncementB';
 import Announcement from '../announcement';
 import ProfileSettings from '../profile';
 
+
 const PURPLE = '#450693';
 
 export default function UniChatApp() {
@@ -36,12 +37,12 @@ export default function UniChatApp() {
         setRole(userRole);
 
         // جلب المستخدمين
-        const usersRes = await fetch('http://192.168.1.4:5000/api/auth/all-users');
+        const usersRes = await fetch('http://10.189.157.156:5000/api/auth/all-users');
         const usersData = await usersRes.json();
         setUsers(usersData);
 
         // جلب المجموعات
-        const groupsRes = await fetch('http://192.168.1.4:5000/api/groups/all');
+        const groupsRes = await fetch('http://10.189.157.75/api/groups/all');
         const groupsData = await groupsRes.json();
         setGroups(groupsData);
 
@@ -57,46 +58,99 @@ export default function UniChatApp() {
   // --- 3. وظائف المحادثة (إرسال واستقبال) ---
   
   // جلب الرسائل (فردية أو مجموعات)
-  const fetchChatContent = async (id: string, type: 'user' | 'group') => {
-    try {
-      const myId = await AsyncStorage.getItem('userId');
-      const url = type === 'user' 
-        ? `http://192.168.1.4:5000/api/messages/${myId}/${id}`
-        : `http://192.168.1.4:5000/api/groups/${id}/messages`;
-      
-      const res = await fetch(url);
-      const data = await res.json();
+  // 1. تعديل فانكشن الجلب لإضافة Debug ومعرفة الخطأ
+/**const fetchChatContent = async (id: string, type: 'user' | 'group') => {
+  try {
+    const myId = await AsyncStorage.getItem('userId');
+    const url = type === 'user' 
+      ? `http://192.168.1.4:5000/api/messages/${myId}/${id}`
+      : `http://192.168.1.4:5000/api/groups/${id}/messages`;
+    
+    console.log("Fetching messages from URL:", url); // سيظهر لك إذا كان هناك null
+
+    const res = await fetch(url);
+    const data = await res.json();
+    setMessages(data);
+  } catch (error) {
+    console.log("Error fetching messages:", error);
+  }
+};**/
+const fetchChatContent = async (id: string, type: 'user' | 'group') => {
+  try {
+    // ... كود الـ fetch ...
+    const data = await res.json();
+
+    // تأكد أن البيانات القادمة من السيرفر هي مصفوفة فعلاً
+    if (Array.isArray(data)) {
       setMessages(data);
-    } catch (error) {
-      console.log("Error fetching messages:", error);
+    } else {
+      setMessages([]); // إذا لم تكن مصفوفة (خطأ من السيرفر)، اجعلها مصفوفة فارغة
     }
-  };
+  } catch (error) {
+    setMessages([]); // في حال حدوث خطأ في الشبكة، اجعلها فارغة ولا تتركها null
+  }
+  
+};
+// 2. تعديل الـ FlatList داخل الـ return لتعرض الرسائل بشكل صحيح
+<FlatList
+  data={messages}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item }) => {
+    // نحدد هل الرسالة لي أم للطرف الآخر بناءً على الـ ID
+    // تأكد أنك جلبت myId من AsyncStorage في بداية الدالة
+    const isMine = item.sender === myId; 
+
+    return (
+      <View style={[styles.bubble, isMine ? styles.myBubble : styles.theirBubble]}>
+        <Text style={{ 
+          fontSize: 16, 
+          // النص يكون أبيض في فقاعتي، وأسود في فقاعة الطرف الآخر
+          color: isMine ? '#FFF' : '#000' 
+        }}>
+          {item.text} 
+        </Text>
+      </View>
+    );
+  }}
+  contentContainerStyle={{ padding: 15 }}
+/>
 
   // إرسال رسالة
-  const sendMessage = async () => {
-    if (!newMessage.trim()) return;
-    try {
-      const myId = await AsyncStorage.getItem('userId');
-      const url = activeChatType === 'user' 
-        ? 'http://192.168.1.4:5000/api/messages/send'
-        : `http://192.168.1.4:5000/api/groups/${selectedUser._id}/send`;
+ const sendMessage = async () => {
+  if (!newMessage.trim()) return;
+  try {
+    const myId = await AsyncStorage.getItem('userId');
+    const url = activeChatType === 'user' 
+      ? `http://10.189.157.75/api/messages/send`
+      : `http://10.189.157.75/api/groups/${selectedUser._id}/send`;
 
-      const body = activeChatType === 'user' 
-        ? { sender: myId, recipient: selectedUser._id, text: newMessage }
-        : { sender: myId, text: newMessage };
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sender: myId,
+        recipient: activeChatType === 'user' ? selectedUser._id : undefined,
+        text: newMessage
+      }),
+    });
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const savedMsg = await res.json();
-      setMessages([...messages, savedMsg]);
-      setNewMessage('');
-    } catch (error) {
-      Alert.alert("Error", "Message not sent");
-    }
-  };
+    const savedMsg = await res.json();
+
+    // الحل هنا: نتحقق أن الحالة الحالية مصفوفة قبل الإضافة
+    setMessages((prevMessages) => {
+      // إذا كانت الحالة السابقة ليست مصفوفة، نبدأ بمصفوفة جديدة تحتوي الرسالة فقط
+      if (!Array.isArray(prevMessages)) {
+        return [savedMsg];
+      }
+      return [...prevMessages, savedMsg];
+    });
+
+    setNewMessage('');
+  } catch (error) {
+    console.log("Send Error:", error);
+    Alert.alert("Error", "Message could not be sent.");
+  }
+};
 
   if (loading) return <View style={styles.center}><ActivityIndicator size="large" color={PURPLE} /></View>;
 
